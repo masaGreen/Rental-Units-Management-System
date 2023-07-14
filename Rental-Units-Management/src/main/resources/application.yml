@@ -1,0 +1,16 @@
+spring:
+    application:
+        name: Rental-Unit-Management
+    datasource:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        password: pooltask1
+        url: jdbc:mysql://localhost:3306/db_rentals
+        username: root
+    jpa:
+        hibernate:
+            ddl-auto: update
+        show-sql: true
+
+
+
+
