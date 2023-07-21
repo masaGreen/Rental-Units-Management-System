@@ -1,5 +1,6 @@
 package com.masagreen.RentalUnitsManagement.controllers;
 
+import com.masagreen.RentalUnitsManagement.dtos.CommonResponseMessageDto;
 import com.masagreen.RentalUnitsManagement.dtos.utils.UtilsReqDto;
 import com.masagreen.RentalUnitsManagement.dtos.utils.UtilsResDto;
 import com.masagreen.RentalUnitsManagement.models.UtilitiesPayments;
@@ -19,26 +20,28 @@ import static com.masagreen.RentalUnitsManagement.utils.ProcessResponse.processR
 @RestController
 @RequestMapping("/v1/utilities")
 @Tag(name="utilities")
+
 public class UtilitiesController {
     @Autowired
     private UtilitiesPaymentsService utilitiesPaymentsService;
 
     @PostMapping()
-    public ResponseEntity<String> saveUtilityPayment(@RequestBody UtilsReqDto utilsReqDto){
+    public ResponseEntity<?> saveUtilityPayment(@RequestBody UtilsReqDto utilsReqDto){
 
 
         try {
             UtilitiesPayments utilitiesPayment = utilitiesPaymentsService.saveUtilitiesPayments(utilsReqDto);
             if (utilitiesPayment != null) {
 
-                return new ResponseEntity<>("{\"message\": \"successfully created\"}", HttpStatus.CREATED);
+                return new ResponseEntity<>(CommonResponseMessageDto.builder().message("successfully created").build(), HttpStatus.CREATED);
             }else{
-                return new ResponseEntity<>("{\"message\": \"can't create utilities payments for non-existent unit\"}", HttpStatus.CREATED);
+                return new ResponseEntity<>(CommonResponseMessageDto.builder().message("can't create utilities payments for non-existent unit").build(), HttpStatus.BAD_REQUEST);
             }
         } catch (Exception e){
             e.printStackTrace();
+            return new ResponseEntity<>(CommonResponseMessageDto.builder().message(e.getMessage()).build(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>("{\"message\": \"internal server error\"}", HttpStatus.INTERNAL_SERVER_ERROR);
+
     }
     @GetMapping("/download/allUtilPayments")
     public ResponseEntity<?> downloadAllUtilsPayments(HttpServletResponse response) {
@@ -51,12 +54,12 @@ public class UtilitiesController {
 
             utilitiesPaymentsService.generate(httpServletResponse, "AllUtilitiesPayments", allUtils);
 
-            return new ResponseEntity<>("{\"message\": \"downloading\"}", HttpStatus.OK);
+            return new ResponseEntity<>(CommonResponseMessageDto.builder().message("successfully created").build(), HttpStatus.OK);
 
         } catch (Exception e) {
             e.printStackTrace();
+            return new ResponseEntity<>(CommonResponseMessageDto.builder().message(e.getMessage()).build(),HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>("{\"message\": \"internal server error\"}", HttpStatus.INTERNAL_SERVER_ERROR);
     }
     @GetMapping("/download/allUtilPaymentsWithPendingBills")
     public ResponseEntity<?> downloadAllUtilsPaymentsWithPendingBills(HttpServletResponse response) {
@@ -70,12 +73,13 @@ public class UtilitiesController {
 
            utilitiesPaymentsService.generate(httpServletResponse, "AllUtilitiesPayments", allUtils);
 
-            return new ResponseEntity<>("{\"message\": \"downloading\"}", HttpStatus.OK);
+            return new ResponseEntity<>(CommonResponseMessageDto.builder().message("downloading").build(), HttpStatus.OK);
 
         } catch (Exception e) {
             e.printStackTrace();
+            return new ResponseEntity<>(CommonResponseMessageDto.builder().message(e.getMessage()).build(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>("{\"message\": \"internal server error\"}", HttpStatus.INTERNAL_SERVER_ERROR);
+
     }
     @GetMapping("/download/allUtilPaymentsPerUnit/{unitNumber}")
     public ResponseEntity<?> downloadAllUtilsPaymentsForSingleUnit(@PathVariable("unitNumber") String unitNumber, HttpServletResponse response) {
@@ -86,12 +90,13 @@ public class UtilitiesController {
 
             utilitiesPaymentsService.generate(httpServletResponse, "AllUtilitiesPayments", utilPayments);
 
-            return new ResponseEntity<>("{\"message\": \"downloading\"}", HttpStatus.OK);
+            return new ResponseEntity<>(CommonResponseMessageDto.builder().message("downloading").build(), HttpStatus.OK);
 
         } catch (Exception e) {
             e.printStackTrace();
+            return new ResponseEntity<>(CommonResponseMessageDto.builder().message(e.getMessage()).build(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>("{\"message\": \"internal server error\"}", HttpStatus.INTERNAL_SERVER_ERROR);
+
     }
     @GetMapping
     public ResponseEntity<?> getAllUtilsPayments(){
@@ -101,8 +106,9 @@ public class UtilitiesController {
                     .build(), HttpStatus.OK);
         }catch (Exception e){
             e.printStackTrace();
+            return new ResponseEntity<>(CommonResponseMessageDto.builder().message(e.getMessage()).build(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>("{\"message\": \"internal server error\"}", HttpStatus.INTERNAL_SERVER_ERROR);
+
     }
 
     @GetMapping("/getByUnit/{unitNumber}")
@@ -112,13 +118,14 @@ public class UtilitiesController {
             if(!utilPayments.isEmpty()) {
                 return new ResponseEntity<>(UtilsResDto.builder().utilsPayments(utilPayments).build(), HttpStatus.OK);
             }else{
-                return new ResponseEntity<>("{\"message\": \"unit doesn't exist\"}", HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>(CommonResponseMessageDto.builder().message("unit doesn't exist").build(), HttpStatus.NOT_FOUND);
             }
 
         } catch (Exception e){
             e.printStackTrace();
+            return new ResponseEntity<>(CommonResponseMessageDto.builder().message(e.getMessage()).build(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>("{\"message\": \"internal server error\"}", HttpStatus.INTERNAL_SERVER_ERROR);
+
     }
     @GetMapping("/getByStatus/{status}")
     public ResponseEntity<?> findByUnitWithArrears(@PathVariable("status") String status){
@@ -131,28 +138,31 @@ public class UtilitiesController {
             if(!utilPayments.isEmpty()) {
                 return new ResponseEntity<>(UtilsResDto.builder().utilsPayments(utilPayments).build(), HttpStatus.OK);
             }else{
-                return new ResponseEntity<>("{\"message\": \"all unit bills paid\"}", HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>(CommonResponseMessageDto.builder().message("all unit bills paid").build(), HttpStatus.NOT_FOUND);
             }
 
         } catch (Exception e){
             e.printStackTrace();
+            return new ResponseEntity<>(CommonResponseMessageDto.builder().message(e.getMessage()).build(), HttpStatus.INTERNAL_SERVER_ERROR);
+
         }
-        return new ResponseEntity<>("{\"message\": \"internal server error\"}", HttpStatus.INTERNAL_SERVER_ERROR);
+
     }
     @DeleteMapping("/deleteUtilities/{id}")
-    public ResponseEntity<String>  deleteUtility(@PathVariable("id") String id){
+    public ResponseEntity<?>  deleteUtility(@PathVariable("id") String id){
         try{
             String res = utilitiesPaymentsService.deleteUtility(id);
             if(res==null) {
-                return new ResponseEntity<>("{\"message\": \"successfully deleted\"}", HttpStatus.OK);
+                return new ResponseEntity<>(CommonResponseMessageDto.builder().message("deleted successfully").build(), HttpStatus.BAD_REQUEST);
             }else{
-                return new ResponseEntity<>("{\"message\": \"id doesn't exist\"}", HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>(CommonResponseMessageDto.builder().message("id doesn't exist").build(), HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
         } catch (Exception e){
             e.printStackTrace();
+            return new ResponseEntity<>(CommonResponseMessageDto.builder().message(e.getMessage()).build(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>("{\"message\": \"internal server error\"}", HttpStatus.INTERNAL_SERVER_ERROR);
+
     }
 
 

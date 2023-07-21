@@ -6,6 +6,6 @@ import lombok.Data;
 @Data
 @Builder
 public class StatusUpdateReqDto {
-    private String id;
+    private String phone;
     private String payStatus;
 }

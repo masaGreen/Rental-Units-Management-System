@@ -98,7 +98,8 @@ public class TenantService {
     public Tenant saveTenant(TenantReqDto tenantReqDto) {
         Optional<Unit> unit = unitService.findByUnitNumber(tenantReqDto.getUnitNumber());
 
-        if(unit.isPresent() && !unit.get().isStatus()){
+        if(unit.isPresent() && unit.get().isStatus()){
+            unit.get().setStatus(!unit.get().isStatus());
             Tenant tenant = Tenant.builder()
                     .firstName(tenantReqDto.getFirstName())
                     .lastName(tenantReqDto.getLastName())
@@ -108,7 +109,7 @@ public class TenantService {
                     .payStatus("unpaid")
                     .unit(unit.get())
                     .build();
-            unit.get().setStatus(!unit.get().isStatus());
+           
             unitService.saveUnit(unit.get());
            return tenantRepository.save(tenant);
         }
@@ -124,8 +125,9 @@ public class TenantService {
         Optional<Tenant> tenant = tenantRepository.findById(Long.parseLong(id));
 
         if (tenant.isPresent()){
-            tenant.get().getUnit().setStatus(false);
-            unitService.saveUnit(tenant.get().getUnit());
+            Unit unit = tenant.get().getUnit();
+            unit.setStatus(true);
+            unitService.saveUnit(unit);
             tenantRepository.deleteById(Long.parseLong(id));
             return null;
         }

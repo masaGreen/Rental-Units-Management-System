@@ -1,7 +1,9 @@
 package com.masagreen.RentalUnitsManagement.controllers;
 
+import com.masagreen.RentalUnitsManagement.dtos.CommonResponseMessageDto;
 import com.masagreen.RentalUnitsManagement.dtos.unit.UnitDataResponseDto;
 import com.masagreen.RentalUnitsManagement.dtos.unit.UnitReqDto;
+import com.masagreen.RentalUnitsManagement.jwt.JwtFilter;
 import com.masagreen.RentalUnitsManagement.models.Unit;
 import com.masagreen.RentalUnitsManagement.services.UnitService;
 import com.masagreen.RentalUnitsManagement.utils.ProcessResponse;
@@ -18,32 +20,34 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/v1/units")
 @Tag(name="units")
-@CrossOrigin({"http://localhost:5173"})
+
 public class UnitController {
     @Autowired
     private UnitService unitService;
-
+    @Autowired
+    private JwtFilter jwtFilter;
     @PostMapping()
-    public ResponseEntity<String> rentUnit(@RequestBody UnitReqDto unitReqDto){
+    public ResponseEntity<?> rentUnit(@RequestBody UnitReqDto unitReqDto){
         Unit unit = Unit.builder()
                 .plotName(unitReqDto.getPlotName())
-                .unitNumber(unitReqDto.getUnitNumber())
+                .unitNumber(unitReqDto.getPlotName()+unitReqDto.getUnitNumber())
                 .tag(unitReqDto.getTag())
-                .status(false)
+                .status(true)
                 .rent(unitReqDto.getRent())
                 .build();
 
         try {
-            if (unit != null) {
-                unitService.saveUnit(unit);
-                return new ResponseEntity<>("{\"message\": \"successfully created\"}", HttpStatus.CREATED);
+            Unit unitToBeSaved = unitService.saveUnit(unit);
+            if (unitToBeSaved  != null) {
+                return new ResponseEntity<>(CommonResponseMessageDto.builder().message("successfully created").build(), HttpStatus.CREATED);
             }else{
-                return new ResponseEntity<>("{\"message\": \"unit already exists\"}", HttpStatus.CREATED);
+                return new ResponseEntity<>(CommonResponseMessageDto.builder().message("unit already exists").build(), HttpStatus.BAD_REQUEST);
             }
         } catch (Exception e){
             e.printStackTrace();
+            return new ResponseEntity<>(CommonResponseMessageDto.builder().message("internal server error").build(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>("{\"message\": \"internal server error\"}", HttpStatus.INTERNAL_SERVER_ERROR);
+
     }
     @GetMapping
     public ResponseEntity<?> getUnits(){
@@ -52,8 +56,9 @@ public class UnitController {
             return new ResponseEntity<>(UnitDataResponseDto.builder().units(units).build(),HttpStatus.OK);
         }catch (Exception e){
             e.printStackTrace();
+            return new ResponseEntity<>(CommonResponseMessageDto.builder().message("internal server error").build(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>("{\"message\": \"internal server error\"}", HttpStatus.INTERNAL_SERVER_ERROR);
+
     }
     @GetMapping("/download/allUnits")
     public ResponseEntity<?> downloadAllTenants(HttpServletResponse response) {
@@ -64,27 +69,25 @@ public class UnitController {
 
             unitService.generate(httpServletResponse, "AllUnits", units);
 
-            return new ResponseEntity<>("{\"message\": \"downloading\"}", HttpStatus.OK);
+            return new ResponseEntity<>(CommonResponseMessageDto.builder().message("downloading").build(), HttpStatus.OK);
 
         } catch (Exception e) {
             e.printStackTrace();
+            return new ResponseEntity<>(CommonResponseMessageDto.builder().message(e.getMessage()).build(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>("{\"message\": \"internal server error\"}", HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-    @GetMapping("/getSingleUnit/{id}")
-    public ResponseEntity<?>  getSingleUnit(@PathVariable("id") String id){
-        try{
-            Optional<Unit> unit = unitService.getSingleUnit(id);
-            if(unit.isPresent()) {
-                return new ResponseEntity<>(unit, HttpStatus.OK);
-            }else{
-                return new ResponseEntity<>("{\"message\": \"id doesn't exist\"}", HttpStatus.NOT_FOUND);
-            }
 
-        } catch (Exception e){
+    }
+    @GetMapping("/getAvailableUnits")
+    public ResponseEntity<?>  getAvailableUnits(){
+        try{
+            List<Unit> units = unitService.findAllUnits().stream().filter(Unit::isStatus).toList();
+
+            return new ResponseEntity<>(UnitDataResponseDto.builder().units(units).build(),HttpStatus.OK);
+        }catch (Exception e){
             e.printStackTrace();
+            return new ResponseEntity<>(CommonResponseMessageDto.builder().message(e.getMessage()).build(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>("{\"message\": \"internal server error\"}", HttpStatus.INTERNAL_SERVER_ERROR);
+
     }
     @GetMapping("/getByUnitNumber/{unitNumber}")
     public ResponseEntity<?> findByName(@PathVariable("unitNumber") String unitNum){
@@ -93,45 +96,50 @@ public class UnitController {
             if(unit.isPresent()) {
                 return new ResponseEntity<>(unit.get(), HttpStatus.OK);
             }else{
-                return new ResponseEntity<>("{\"message\": \"name doesn't exist\"}", HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>(CommonResponseMessageDto.builder().message("name doesn't exist").build(), HttpStatus.NOT_FOUND);
             }
 
         } catch (Exception e){
             e.printStackTrace();
+            return new ResponseEntity<>(CommonResponseMessageDto.builder().message(e.getMessage()).build(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>("{\"message\": \"internal server error\"}", HttpStatus.INTERNAL_SERVER_ERROR);
     }
-    @GetMapping("/updateUnitStatus/{id}")
-    public ResponseEntity<?> updateAvailability(@PathVariable("id") String id){
+    @GetMapping("/updateUnitStatus/{unitNumber}")
+    public ResponseEntity<?> updateAvailability(@PathVariable("unitNumber") String unitNumber){
         try{
-            Optional<Unit> unit = unitService.getSingleUnit(id);
+            Optional<Unit> unit = unitService.findByUnitNumber(unitNumber);
             if(unit.isPresent()) {
-                unit.get().setStatus(!unit.get().isStatus());
-                unitService.saveUnit(unit.get());
-                return new ResponseEntity<>("{\"message\": \"status successfully changed\"}", HttpStatus.NOT_FOUND);
+                Unit unitFound = unit.get();
+               
+                unitFound.setStatus(!(unitFound.isStatus()));
+
+               unitService.saveUnit(unitFound);
+               
+                return new ResponseEntity<>(CommonResponseMessageDto.builder().message("status successfully changed").build(), HttpStatus.OK);
             }else{
-                return new ResponseEntity<>("{\"message\": \"id doesn't exist\"}", HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>(CommonResponseMessageDto.builder().message("id doesn't exist").build(), HttpStatus.NOT_FOUND);
             }
 
         } catch (Exception e){
             e.printStackTrace();
+            return new ResponseEntity<>(CommonResponseMessageDto.builder().message(e.getMessage()).build(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>("{\"message\": \"internal server error\"}", HttpStatus.INTERNAL_SERVER_ERROR);
+
     }
     @DeleteMapping("/reset/{id}")
-    public ResponseEntity<String>  deleteUnit(@PathVariable("id") String id){
+    public ResponseEntity<?>  deleteUnit(@PathVariable("id") String id){
         try{
             String res = unitService.deleteUnit(id);
-            if(res==null) {
-                return new ResponseEntity<>("{\"message\": \"successfully deleted\"}", HttpStatus.OK);
+            if(res==null && jwtFilter.isAdmin()) {
+                return new ResponseEntity<>(CommonResponseMessageDto.builder().message("successfully deleted").build(), HttpStatus.OK);
             }else{
-                return new ResponseEntity<>("{\"message\": \"id doesn't exist\"}", HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>(CommonResponseMessageDto.builder().message("id doesn't exist").build(), HttpStatus.FORBIDDEN);
             }
 
         } catch (Exception e){
             e.printStackTrace();
+            return new ResponseEntity<>(CommonResponseMessageDto.builder().message(e.getMessage()).build(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>("{\"message\": \"internal server error\"}", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 }

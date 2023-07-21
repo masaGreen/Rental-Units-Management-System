@@ -144,6 +144,6 @@ public class UtilitiesPaymentsService {
             utilitiesPaymentsRepository.deleteById(Long.parseLong(id));
             return null;
         }
-        return "tenant id doesn't exist";
+        return "id doesn't exist";
     }
 }

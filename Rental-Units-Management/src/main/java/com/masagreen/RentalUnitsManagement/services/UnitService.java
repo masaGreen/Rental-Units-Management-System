@@ -21,11 +21,20 @@ public class UnitService {
     public Unit saveUnit(Unit unit) {
 
         Optional<Unit> foundUnit = unitRepository.findByUnitNumber(unit.getUnitNumber());
-        if(foundUnit.isEmpty()) {
-
-           return unitRepository.save(unit);
+        if(foundUnit.isEmpty() ) {
+             return unitRepository.save(unit);
+        }
+     
+        
+        if(unit.getPlotName() != foundUnit.get().getPlotName()){
+                return unitRepository.save(unit);
+            }
+        if(unit.getId() == foundUnit.get().getId()){
+            return unitRepository.save(unit);
         }
         return null;
+        
+
     }
     public void generate(HttpServletResponse res, String title, List<Unit> units) throws DocumentException, IOException {
 
@@ -96,10 +105,12 @@ public class UnitService {
     }
 
     public List<Unit> findAllUnits() {
+       
         return unitRepository.findAll();
     }
 
     public String deleteUnit(String id) {
+        System.out.println(id+">>>>>>>>");
        Optional<Unit> unit = unitRepository.findById(Long.parseLong(id));
        if (unit.isPresent()){
          unitRepository.deleteById(Long.parseLong(id));
@@ -108,7 +119,7 @@ public class UnitService {
        return "unit id doesn't exist";
     }
 
-    public Optional<Unit> getSingleUnit(String id) {
+    public Optional<Unit> getSingleUnit(String id) throws NumberFormatException {
         return unitRepository.findById(Long.parseLong(id));
     }
 

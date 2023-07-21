@@ -10,6 +10,10 @@ spring:
         hibernate:
             ddl-auto: update
         show-sql: true
+jwt:
+    secret: ZxAlWGbVUaVVy0RpA7154DpT2nlreIyvdNT17CVuRDx3sTcfwr1Zw1wTTP0tOoeJ
+mail:
+    originmail: 
 
 
 
