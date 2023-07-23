@@ -32,16 +32,17 @@ This Api provides necessary endpoints that a client needs to manage rental units
             
 
             cd Rental-Units-Management-System
-            mvnw clwan package
+            mvnw clean package
 
             
 - The application will start at http://localhost:8080
 # Swagger Api documentation 
 - For detailed documentation on endpoints and payloads visit "http://localhost:8080/swagger-ui.html" after your app starts.
+- Hit the default-authorized /v1/auth/login with the provided default login credentials to get your token inorder to test the rest of the endpoints.
   
 # Authentication endpoint
 ```sql
- v1/auth/
+ v1/auth/login
   ```
 # Main Endpoints (the rest are indicated on the main documentation)
 ```sql
@@ -62,6 +63,8 @@ Rental-Units-Management-System provides the following features:
 # Usage
 - **NB** All users are signed-up as unapproved so to facilitate approval a default admin is automatically enabled on startup,
 with email:root@gmail.com password:rootpassword. This can be changed once your custom admin(S) is enabled.
+
+- jwt token is set as Authorization Header
 
 - Once the server is running, you can access the API at `http://localhost:8080/`. You can use any HTTP client to interact with the API, such as curl . Alternatively, you can use swagger-ui to explore the endpoints.
 
