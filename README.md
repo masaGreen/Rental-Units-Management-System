@@ -1,8 +1,8 @@
 ![Java](https://img.shields.io/badge/Java-FEB95F?style=for-the-badge&logo=java&logoColor=white)
 ![Spring-Boot](https://img.shields.io/badge/SpringBoot-81FF5E?style=for-the-badge&logo=spring&logoColor=white)
 ![MySql](https://img.shields.io/badge/MySQL-1E7AB8?style=for-the-badge&logo=mysql&logoColor=white)
-![Swagger3](https://img.shields.io/badge/Swagger3-84E713?style=for-the-badge&logoswagger&logoColor=white)
-![JWT](https://img.shields.io/badge/JWT-ef233c?style=for-the-badge&logoswagger&logoColor=white)
+![Swagger3](https://img.shields.io/badge/Swagger3-84E713?style=for-the-badge&logo=swagger&logoColor=white)
+![JWT](https://img.shields.io/badge/JWT-ef233c?style=for-the-badge&logo=jwt.io&logoColor=white)
 
 # A rental-unit management Api made in Springboot.
 Rental-Units-Management-System is a rest-api that can serve a client that provides user interface in managing rental uits.
