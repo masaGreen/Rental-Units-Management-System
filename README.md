@@ -2,10 +2,11 @@
 ![Spring-Boot](https://img.shields.io/badge/Spring-81FF5E?style=for-the-badge&logo=spring&logoColor=white)
 ![MySql](https://img.shields.io/badge/MySQL-1E7AB8?style=for-the-badge&logo=mysql&logoColor=white)
 ![Swagger](https://img.shields.io/badge/Swagger-84E713?style=for-the-badge&logoswagger&logoColor=white)
+![JWT](https://img.shields.io/badge/JWT-ef233c?style=for-the-badge&logoswagger&logoColor=white)
 
 # A rental-unit management Api made in Springboot.
 Rental-Units-Management-System is a rest-api that can serve a client that provides user interface in managing rental uits.
-It is made using java spring boot Framework and swagger ui is used for documentation.
+It is made using java spring boot Framework and swagger ui is used for documentation.It is secured with spring security and json web token -jwt. Important changes are communicated with email.
 
  
 # Overview
@@ -37,8 +38,11 @@ This Api provides necessary endpoints that a client needs to manage rental units
 - The application will start at http://localhost:8080
 # Swagger Api documentation 
 - For detailed documentation on endpoints and payloads visit "http://localhost:8080/swagger-ui.html" after your app starts.
-
-
+  
+# Authentication endpoint
+```sql
+ v1/auth/
+  ```
 # Main Endpoints (the rest are indicated on the main documentation)
 ```sql
 /v1/units/
@@ -56,7 +60,11 @@ Rental-Units-Management-System provides the following features:
 
 
 # Usage
-Once the server is running, you can access the API at `http://localhost:8080/`. You can use any HTTP client to interact with the API, such as curl . Alternatively, you can use swagger-ui to explore the endpoints.
+- **NB** All users are signed-up as unapproved so to facilitate approval a default admin is automatically enabled on startup,
+with email:root@gmail.com password:rootpassword. This can be changed once your custom admin(S) is enabled.
+
+- Once the server is running, you can access the API at `http://localhost:8080/`. You can use any HTTP client to interact with the API, such as curl . Alternatively, you can use swagger-ui to explore the endpoints.
+
 
 # License
  Licensed under the MIT License.
