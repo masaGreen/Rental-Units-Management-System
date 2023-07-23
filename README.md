@@ -1,5 +1,5 @@
 ![Java](https://img.shields.io/badge/Java-FEB95F?style=for-the-badge&logo=java&logoColor=white)
-![Spring-Boot](https://img.shields.io/badge/Spring-81FF5E?style=for-the-badge&logo=spring&logoColor=white)
+![Spring-Boot](https://img.shields.io/badge/SpringBoot-81FF5E?style=for-the-badge&logo=spring&logoColor=white)
 ![MySql](https://img.shields.io/badge/MySQL-1E7AB8?style=for-the-badge&logo=mysql&logoColor=white)
 ![Swagger](https://img.shields.io/badge/Swagger-84E713?style=for-the-badge&logoswagger&logoColor=white)
 ![JWT](https://img.shields.io/badge/JWT-ef233c?style=for-the-badge&logoswagger&logoColor=white)
