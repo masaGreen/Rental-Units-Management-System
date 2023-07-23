@@ -28,10 +28,10 @@ This Api provides necessary endpoints that a client needs to manage rental units
             
 - create database db_rentals
 - **NB** make sure no application is running on port 8080 otherwise change port before running the application
--  Inside the target folder :
             
 
-            java -jar Rental-Units-Management-0.0.1-SNAPSHOT.jar
+            cd Rental-Units-Management-System
+            mvnw clwan package
 
             
 - The application will start at http://localhost:8080
