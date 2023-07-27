@@ -4,6 +4,8 @@
 ![Swagger3](https://img.shields.io/badge/Swagger3-84E713?style=for-the-badge&logo=swagger&logoColor=white)
 ![JWT](https://img.shields.io/badge/JWT-ef233c?style=for-the-badge&logo=jwt.io&logoColor=white)
 
+https://github.com/masaGreen/Rental-Units-Management-System/assets/111172753/8a7fb3b4-3f10-42d2-8be9-34b9dd3907a8
+
 # A rental-unit management Api made in Springboot.
 Rental-Units-Management-System is a rest-api that can serve a client that provides user interface in managing rental uits.
 It is made using java spring boot Framework and swagger ui is used for documentation.It is secured with spring security and json web token -jwt. Important changes are communicated with email.
