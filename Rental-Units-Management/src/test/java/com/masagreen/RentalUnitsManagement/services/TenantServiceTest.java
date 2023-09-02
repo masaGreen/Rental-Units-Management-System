@@ -2,15 +2,10 @@ package com.masagreen.RentalUnitsManagement.services;
 
 import com.masagreen.RentalUnitsManagement.models.Tenant;
 import com.masagreen.RentalUnitsManagement.repositories.TenantRepository;
-import jakarta.persistence.EntityManager;
-import org.assertj.core.api.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.mockito.stubbing.OngoingStubbing;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 

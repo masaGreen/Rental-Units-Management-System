@@ -5,8 +5,6 @@ import com.lowagie.text.pdf.CMYKColor;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
-import com.masagreen.RentalUnitsManagement.dtos.utils.UtilsReqDto;
-import com.masagreen.RentalUnitsManagement.models.Unit;
 import com.masagreen.RentalUnitsManagement.models.UtilitiesPayments;
 import com.masagreen.RentalUnitsManagement.repositories.UtilitiesPaymentsRepository;
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,7 +19,6 @@ import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
