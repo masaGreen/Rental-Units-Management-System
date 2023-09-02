@@ -1,4 +1,6 @@
 spring:
+    server:
+        port: 9090
     application:
         name: Rental-Unit-Management
     datasource:

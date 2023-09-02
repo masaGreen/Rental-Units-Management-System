@@ -99,7 +99,8 @@ public class TenantService {
         Optional<Unit> unit = unitService.findByUnitNumber(tenantReqDto.getUnitNumber());
 
         if(unit.isPresent() && unit.get().isStatus()){
-            unit.get().setStatus(!unit.get().isStatus());
+            unit.get();
+            unit.get().setStatus(false);
             Tenant tenant = Tenant.builder()
                     .firstName(tenantReqDto.getFirstName())
                     .lastName(tenantReqDto.getLastName())
@@ -116,8 +117,8 @@ public class TenantService {
         return null;
 
     }
-    public void saveTenant(Tenant tenant) {
-        tenantRepository.save(tenant);
+    public Tenant saveTenant(Tenant tenant) {
+       return tenantRepository.save(tenant);
 
     }
 
@@ -134,8 +135,8 @@ public class TenantService {
         return "tenant id doesn't exist";
     }
 
-    public Optional<Tenant> findByPhone(String id) {
-        return tenantRepository.findByPhone(id);
+    public Optional<Tenant> findByPhone(String phone) {
+        return tenantRepository.findByPhone(phone);
     }
 
     public Optional<Tenant> findByTenantId(long l) {

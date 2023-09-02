@@ -25,24 +25,24 @@ public class SendMail {
       String to, String subject) {
         String randomPassword = UUID.randomUUID().toString().substring(0, 4);
         log.info(randomPassword);
-        SimpleMailMessage message = new SimpleMailMessage(); 
-        // not mandatory however many servers require from prop
-        message.setFrom(originmail);
-        message.setTo(to); 
-        message.setSubject(subject); 
-        message.setText( randomPassword );
-        emailSender.send(message);
+//        SimpleMailMessage message = new SimpleMailMessage();
+//        // not mandatory however many servers require from prop
+//        message.setFrom(originmail);
+//        message.setTo(to);
+//        message.setSubject(subject);
+//        message.setText( randomPassword );
+//        emailSender.send(message);
       
     }
     public void sendApprovedBy(String[] to, String subject, String content){
        
-        SimpleMailMessage message = new SimpleMailMessage(); 
-        // not mandatory however many servers require from prop
-        message.setFrom(originmail);
-        message.setTo(to); 
-        message.setSubject(subject); 
-        message.setText( content );
-        emailSender.send(message);
+//        SimpleMailMessage message = new SimpleMailMessage();
+//        // not mandatory however many servers require from prop
+//        message.setFrom(originmail);
+//        message.setTo(to);
+//        message.setSubject(subject);
+//        message.setText( content );
+//        emailSender.send(message);
     }
 }
     

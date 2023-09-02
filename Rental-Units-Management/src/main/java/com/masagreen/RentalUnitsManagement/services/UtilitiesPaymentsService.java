@@ -107,6 +107,10 @@ public class UtilitiesPaymentsService {
 
     }
 
+    public Optional< UtilitiesPayments> findUtilityById(String id){
+        return  utilitiesPaymentsRepository.findById(Long.parseLong(id));
+    }
+
     public List<UtilitiesPayments> findByUnitNumber(String unitNumber) {
         return  utilitiesPaymentsRepository.findAllByUnitNumber(unitNumber);
     }
@@ -114,26 +118,10 @@ public class UtilitiesPaymentsService {
     public List<UtilitiesPayments> findByStatus(String status) {
         return utilitiesPaymentsRepository.findAllByStatus(status);
     }
-    public UtilitiesPayments saveUtilitiesPayments(UtilsReqDto utilsReqDto){
-        Optional<Unit> unit = unitService.findByUnitNumber(utilsReqDto.getUnitNumber());
-        if(unit.isEmpty()) return null;
+    public UtilitiesPayments saveUtilitiesPayments(UtilitiesPayments utilitiesPayments){
 
-        boolean isPaid = ( Integer.parseInt(utilsReqDto.getAmountPaid()) - (Integer.parseInt(
-                utilsReqDto.getGarbage())+Integer.parseInt(utilsReqDto.getWaterBill()))) >=0;
-        String status = isPaid ? "paid":"unpaid";
-
-        UtilitiesPayments utilitiesPayments = UtilitiesPayments.builder()
-                .date(LocalDateTime.now())
-                .waterBill(utilsReqDto.getWaterBill())
-                .garbage(utilsReqDto.getGarbage())
-                .amountPaid(utilsReqDto.getAmountPaid())
-                .status(status)
-                .unitNumber(unit.get().getUnitNumber())
-                .unit(unit.get())
-                .build();
        return utilitiesPaymentsRepository.save(utilitiesPayments);
     }
-
 
     public String deleteUtility(String id) {
         Optional<UtilitiesPayments> utilitiesPayment = utilitiesPaymentsRepository.findById(Long.parseLong(id));

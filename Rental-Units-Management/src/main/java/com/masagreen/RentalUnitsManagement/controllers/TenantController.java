@@ -7,7 +7,8 @@ import com.masagreen.RentalUnitsManagement.dtos.tenant.TenantsResponseDto;
 import com.masagreen.RentalUnitsManagement.jwt.JwtFilter;
 import com.masagreen.RentalUnitsManagement.models.Tenant;
 import com.masagreen.RentalUnitsManagement.services.TenantService;
-import com.masagreen.RentalUnitsManagement.utils.ProcessResponse;
+import com.masagreen.RentalUnitsManagement.utils.ProcessDownloadResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +23,8 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/v1/tenants")
-@Tag(name="tenants")
-
+@SecurityRequirement(name = "bearerAuth")
+@Tag(name="Tenants")
 public class TenantController {
     @Autowired
     private TenantService tenantService;
@@ -49,7 +50,7 @@ public class TenantController {
         try {
             List<Tenant> tenants = tenantService.findAllTenants();
 
-            HttpServletResponse httpServletResponse = ProcessResponse.processResponse(response);
+            HttpServletResponse httpServletResponse = ProcessDownloadResponse.processResponse(response);
 
             tenantService.generate(httpServletResponse, "AllTenants", tenants);
 
@@ -69,7 +70,7 @@ public class TenantController {
                             .filter(tenant->"unpaid".equalsIgnoreCase(tenant.getPayStatus()))
                             .toList();
 
-            HttpServletResponse httpServletResponse = ProcessResponse.processResponse(response);
+            HttpServletResponse httpServletResponse = ProcessDownloadResponse.processResponse(response);
 
             tenantService.generate(httpServletResponse, "AllTenantsWithArrears", list);
 
@@ -130,11 +131,11 @@ public class TenantController {
     }
         
 
-    @GetMapping("/getByPhone/{id}")
-    public ResponseEntity<?> findByName(@PathVariable("id") String id){
+    @GetMapping("/getByPhone/{phone}")
+    public ResponseEntity<?> findByPhone(@PathVariable("phone") String phone){
 
         try{
-            Optional<Tenant> tenant = tenantService.findByPhone(id);
+            Optional<Tenant> tenant = tenantService.findByPhone(phone);
             if(tenant.isPresent()) {
                 return new ResponseEntity<>(tenant, HttpStatus.OK);
             }else{

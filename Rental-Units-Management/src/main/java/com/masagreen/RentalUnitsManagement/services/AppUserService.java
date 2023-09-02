@@ -46,16 +46,13 @@ public class AppUserService implements UserDetailsService{
         return appUserRepository.findByEmail(email);
     }
 
-    public Optional<AppUser> findByPassword(String encode) {
-        return appUserRepository.findByPassword(encode);
-    }
 
     public List<AppUser> findAllUsers() {
         return appUserRepository.findAll();
     }
 
 
-    public String deleteTenant(String id) {
+    public String deleteAppUser(String id) {
         Optional<AppUser> user = appUserRepository.findById(Integer.parseInt(id));
 
         if (user.isPresent()){

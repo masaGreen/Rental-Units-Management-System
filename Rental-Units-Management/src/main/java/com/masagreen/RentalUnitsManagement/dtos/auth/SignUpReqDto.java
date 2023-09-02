@@ -18,8 +18,8 @@ public class SignUpReqDto {
     @NotBlank
     private String email;
 
-    @Size(min= 4, message="must be longer than 4 characters")
+    @Size(min= 4,max= 8, message="must be longer than 4 characters")
     private String password;
-    @NotBlank(message="role must not be emppty")
+    @NotBlank(message="role must not be empty")
     private String role;
 }

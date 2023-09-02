@@ -6,7 +6,8 @@ import com.masagreen.RentalUnitsManagement.dtos.unit.UnitReqDto;
 import com.masagreen.RentalUnitsManagement.jwt.JwtFilter;
 import com.masagreen.RentalUnitsManagement.models.Unit;
 import com.masagreen.RentalUnitsManagement.services.UnitService;
-import com.masagreen.RentalUnitsManagement.utils.ProcessResponse;
+import com.masagreen.RentalUnitsManagement.utils.ProcessDownloadResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,8 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/v1/units")
-@Tag(name="units")
+@Tag(name = "units")
+@SecurityRequirement(name = "bearerAuth")
 
 public class UnitController {
     @Autowired
@@ -38,6 +40,7 @@ public class UnitController {
 
         try {
             Unit unitToBeSaved = unitService.saveUnit(unit);
+            System.out.println(unitToBeSaved);
             if (unitToBeSaved  != null) {
                 return new ResponseEntity<>(CommonResponseMessageDto.builder().message("successfully created").build(), HttpStatus.CREATED);
             }else{
@@ -65,7 +68,7 @@ public class UnitController {
         try {
             List<Unit> units = unitService.findAllUnits();
 
-            HttpServletResponse httpServletResponse = ProcessResponse.processResponse(response);
+            HttpServletResponse httpServletResponse = ProcessDownloadResponse.processResponse(response);
 
             unitService.generate(httpServletResponse, "AllUnits", units);
 

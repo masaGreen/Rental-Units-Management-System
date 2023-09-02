@@ -3,8 +3,11 @@ package com.masagreen.RentalUnitsManagement.controllers;
 import com.masagreen.RentalUnitsManagement.dtos.CommonResponseMessageDto;
 import com.masagreen.RentalUnitsManagement.dtos.utils.UtilsReqDto;
 import com.masagreen.RentalUnitsManagement.dtos.utils.UtilsResDto;
+import com.masagreen.RentalUnitsManagement.models.Unit;
 import com.masagreen.RentalUnitsManagement.models.UtilitiesPayments;
+import com.masagreen.RentalUnitsManagement.services.UnitService;
 import com.masagreen.RentalUnitsManagement.services.UtilitiesPaymentsService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,25 +15,29 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.masagreen.RentalUnitsManagement.utils.ProcessResponse.processResponse;
+import static com.masagreen.RentalUnitsManagement.utils.ProcessDownloadResponse.processResponse;
 
 @RestController
 @RequestMapping("/v1/utilities")
-@Tag(name="utilities")
-
+@SecurityRequirement(name = "bearerAuth")
+@Tag(name="utilities&Payments")
 public class UtilitiesController {
     @Autowired
     private UtilitiesPaymentsService utilitiesPaymentsService;
+    @Autowired
+    private UnitService unitService;
 
     @PostMapping()
     public ResponseEntity<?> saveUtilityPayment(@RequestBody UtilsReqDto utilsReqDto){
 
-
+        UtilitiesPayments utilitiesPayments = processSaveUtilitiesPayment(utilsReqDto);
         try {
-            UtilitiesPayments utilitiesPayment = utilitiesPaymentsService.saveUtilitiesPayments(utilsReqDto);
+            UtilitiesPayments utilitiesPayment = utilitiesPaymentsService.saveUtilitiesPayments(utilitiesPayments);
             if (utilitiesPayment != null) {
 
                 return new ResponseEntity<>(CommonResponseMessageDto.builder().message("successfully created").build(), HttpStatus.CREATED);
@@ -162,6 +169,31 @@ public class UtilitiesController {
             e.printStackTrace();
             return new ResponseEntity<>(CommonResponseMessageDto.builder().message(e.getMessage()).build(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+
+    }
+
+    private UtilitiesPayments processSaveUtilitiesPayment(UtilsReqDto utilsReqDto){
+
+        Optional<Unit> unit = unitService.findByUnitNumber(utilsReqDto.getUnitNumber());
+        if(unit.isEmpty()){
+            return null;
+        }else{
+            boolean isPaid = ( Integer.parseInt(utilsReqDto.getAmountPaid()) - (Integer.parseInt(
+                    utilsReqDto.getGarbage())+Integer.parseInt(utilsReqDto.getWaterBill()))) >=0;
+            String status = isPaid ? "paid":"unpaid";
+
+            UtilitiesPayments utilitiesPayments = UtilitiesPayments.builder()
+                    .date(LocalDateTime.now())
+                    .waterBill(utilsReqDto.getWaterBill())
+                    .garbage(utilsReqDto.getGarbage())
+                    .amountPaid(utilsReqDto.getAmountPaid())
+                    .status(status)
+                    .unitNumber(unit.get().getUnitNumber())
+                    .unit(unit.get())
+                    .build();
+            return  utilitiesPayments;
+        }
+
 
     }
 

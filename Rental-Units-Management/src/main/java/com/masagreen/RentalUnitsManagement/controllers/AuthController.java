@@ -6,13 +6,15 @@ import java.util.Objects;
 import java.util.Optional;
 
 import com.masagreen.RentalUnitsManagement.dtos.CommonResponseMessageDto;
+import com.masagreen.RentalUnitsManagement.dtos.auth.*;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,11 +23,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.masagreen.RentalUnitsManagement.dtos.auth.AuthReqBodyDto;
-import com.masagreen.RentalUnitsManagement.dtos.auth.AuthResDto;
-import com.masagreen.RentalUnitsManagement.dtos.auth.ChnagePasswordReqDto;
-import com.masagreen.RentalUnitsManagement.dtos.auth.SignUpReqDto;
-import com.masagreen.RentalUnitsManagement.dtos.auth.SignUpResponseDto;
 import com.masagreen.RentalUnitsManagement.jwt.JwtFilter;
 import com.masagreen.RentalUnitsManagement.jwt.JwtService;
 import com.masagreen.RentalUnitsManagement.models.AppUser;
@@ -37,7 +34,7 @@ import jakarta.validation.Valid;
 
 @RequestMapping("/v1/auth")
 @RestController
-
+@Tag(name="Authorization")
 public class AuthController {
 
     @Autowired
@@ -114,21 +111,21 @@ public class AuthController {
         }
 
     }
-
-    @GetMapping("/approveUser/{id}")
-    public ResponseEntity<String> updateUser(@PathVariable String id) {
+    @SecurityRequirement(name = "bearerAuth")
+    @PostMapping("/approveUser")
+    public ResponseEntity<String> updateUser(@RequestBody ApprovalDto approvalDto) {
 
         try {
             if (jwtFilter.isAdmin()) {
-                Optional<AppUser> user = appUserService.findById(Integer.parseInt(id));
-
+                Optional<AppUser> user = appUserService.findByEmail(approvalDto.getEmail());
+                System.out.println(user.get());
                 if (user.isPresent()) {
                     user.get().setStatus(!user.get().isStatus());
 
                     appUserService.updateUser(user.get());
 
                     // notify other admins via mail
-                    notifyAdmins(jwtFilter.getCurrentUserEmail(), "approval");
+//                    notifyAdmins(jwtFilter.getCurrentUserEmail(), "approval");
 
                     return new ResponseEntity<>("user status changed", HttpStatus.OK);
                 } else {
@@ -144,7 +141,7 @@ public class AuthController {
         }
 
     }
-
+    @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/forgotPassword")
 
     public ResponseEntity<?> forgotPassword(@RequestBody String email) {
@@ -167,7 +164,7 @@ public class AuthController {
         
 
     }
-
+    @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/changePassword")
     public ResponseEntity<?> changePassword(@Valid @RequestBody ChnagePasswordReqDto changePasswordReqDto) {
 
@@ -181,8 +178,9 @@ public class AuthController {
                     appUserService.updateUser(found.get());
 
                     return new ResponseEntity<>(CommonResponseMessageDto.builder().message("successfully changed your password").build(), HttpStatus.OK);
+                }else {
+                    return new ResponseEntity<>(CommonResponseMessageDto.builder().message("unauthorized").build(), HttpStatus.FORBIDDEN);
                 }
-                return new ResponseEntity<>(CommonResponseMessageDto.builder().message("unauthorized").build(), HttpStatus.FORBIDDEN);
             } else {
                 return new ResponseEntity<>(CommonResponseMessageDto.builder().message("unauthorized").build(), HttpStatus.UNAUTHORIZED);
             }
@@ -192,10 +190,11 @@ public class AuthController {
 
         }
     }
+    @SecurityRequirement(name = "bearerAuth")
      @DeleteMapping("/deleteUser/{id}")
     public ResponseEntity<?>  deleteTenant(@PathVariable("id") String id){
         try{
-            String res = appUserService.deleteTenant(id);
+            String res = appUserService.deleteAppUser(id);
             if(res==null && jwtFilter.isAdmin()) {
                 notifyAdmins(jwtFilter.getCurrentUserEmail(), "Deletion");
                 return new ResponseEntity<>(CommonResponseMessageDto.builder().message("successfully deleted").build(), HttpStatus.OK);

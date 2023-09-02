@@ -21,19 +21,12 @@ public class UnitService {
     public Unit saveUnit(Unit unit) {
 
         Optional<Unit> foundUnit = unitRepository.findByUnitNumber(unit.getUnitNumber());
-        if(foundUnit.isEmpty() ) {
+        System.out.println(foundUnit.get());
+        if(foundUnit.isEmpty()||(unit.getPlotName() != foundUnit.get().getPlotName())||(unit.getId() == foundUnit.get().getId())) {
              return unitRepository.save(unit);
+        }else {
+            return null;
         }
-     
-        
-        if(unit.getPlotName() != foundUnit.get().getPlotName()){
-                return unitRepository.save(unit);
-            }
-        if(unit.getId() == foundUnit.get().getId()){
-            return unitRepository.save(unit);
-        }
-        return null;
-        
 
     }
     public void generate(HttpServletResponse res, String title, List<Unit> units) throws DocumentException, IOException {
