@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-RentalUnitsManagementApplication<Rental-Units-Management>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.masagreen.RentalUnitsManagement.RentalUnitsManagementApplication",
+            "projectName": "Rental-Units-Management",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
