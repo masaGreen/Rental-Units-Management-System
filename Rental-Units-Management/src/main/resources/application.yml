@@ -1,21 +1,26 @@
 spring:
-    server:
-        port: 9090
-    application:
-        name: Rental-Unit-Management
-    datasource:
-        driver-class-name: com.mysql.cj.jdbc.Driver
-        password: pooltask1
-        url: jdbc:mysql://localhost:3306/db_rentals
-        username: root
-    jpa:
-        hibernate:
-            ddl-auto: update
-        show-sql: true
+  profiles: test
+  
+  application:
+    name: Rental-Unit-Management
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    password: <your db password>
+    url: jdbc:mysql://<your db uri>/db_rentals
+    username: <your username>
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
 jwt:
-    secret: ZxAlWGbVUaVVy0RpA7154DpT2nlreIyvdNT17CVuRDx3sTcfwr1Zw1wTTP0tOoeJ
+  secret: <your jwt secret>
 mail:
-    originmail: 
+  originmail: <your smtp mail config>
+
+
+
+
+
 
 
 
