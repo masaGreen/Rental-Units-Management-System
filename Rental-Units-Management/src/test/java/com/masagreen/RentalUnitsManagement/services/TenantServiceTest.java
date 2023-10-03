@@ -29,7 +29,7 @@ class TenantServiceTest {
          id=1;
          tenant = Tenant.builder()
                 .id(id).firstName("Dave").lastName("Macha").phone("0712456797").start(LocalDate.now())
-                .end(null).payStatus("unpaid")
+                .ended(null).payStatus("unpaid")
                 .build();
 
 

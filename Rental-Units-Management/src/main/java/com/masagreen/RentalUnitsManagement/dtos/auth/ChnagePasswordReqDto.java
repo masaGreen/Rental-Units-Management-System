@@ -12,9 +12,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class ChnagePasswordReqDto {
-    @Size(min=4, message="must be longer than four characters")
+    @Size(min=6, message="must be longer than four characters")
     private String oldPassword;
-    @Size(min=4, message="must be longer than four characters")
+    @Size(min=6, message="must be longer than four characters")
     private String newPassword;
     
 }

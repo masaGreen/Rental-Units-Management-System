@@ -22,7 +22,7 @@ public class Tenant {
     private String lastName;
     private String phone;
     private LocalDate start;
-    private LocalDate end;
+    private LocalDate ended;
     @Column(name="payStatus")
     private String payStatus;
 

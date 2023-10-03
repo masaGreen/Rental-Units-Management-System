@@ -1,6 +1,7 @@
 package com.masagreen.RentalUnitsManagement.controllers;
 
 import com.masagreen.RentalUnitsManagement.dtos.CommonResponseMessageDto;
+
 import com.masagreen.RentalUnitsManagement.dtos.unit.UnitDataResponseDto;
 import com.masagreen.RentalUnitsManagement.dtos.unit.UnitReqDto;
 import com.masagreen.RentalUnitsManagement.jwt.JwtFilter;
@@ -10,10 +11,15 @@ import com.masagreen.RentalUnitsManagement.utils.ProcessDownloadResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+
 
 import java.util.List;
 import java.util.Optional;
@@ -21,15 +27,17 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/v1/units")
 @Tag(name = "units")
+@Slf4j
 @SecurityRequirement(name = "bearerAuth")
-
+@CrossOrigin("http://localhost:5173")
 public class UnitController {
     @Autowired
     private UnitService unitService;
     @Autowired
     private JwtFilter jwtFilter;
     @PostMapping()
-    public ResponseEntity<?> rentUnit(@RequestBody UnitReqDto unitReqDto){
+    public ResponseEntity<?> rentUnit( @RequestBody @Valid UnitReqDto unitReqDto){
+     
         Unit unit = Unit.builder()
                 .plotName(unitReqDto.getPlotName())
                 .unitNumber(unitReqDto.getPlotName()+unitReqDto.getUnitNumber())
@@ -44,10 +52,10 @@ public class UnitController {
             if (unitToBeSaved  != null) {
                 return new ResponseEntity<>(CommonResponseMessageDto.builder().message("successfully created").build(), HttpStatus.CREATED);
             }else{
-                return new ResponseEntity<>(CommonResponseMessageDto.builder().message("unit already exists").build(), HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(CommonResponseMessageDto.builder().message("unit already exists").build(), HttpStatus.CONFLICT);
             }
         } catch (Exception e){
-            e.printStackTrace();
+           log.error(e.getLocalizedMessage());
             return new ResponseEntity<>(CommonResponseMessageDto.builder().message("internal server error").build(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -58,7 +66,7 @@ public class UnitController {
             List<Unit> units = unitService.findAllUnits();
             return new ResponseEntity<>(UnitDataResponseDto.builder().units(units).build(),HttpStatus.OK);
         }catch (Exception e){
-            e.printStackTrace();
+           log.error(e.getLocalizedMessage());
             return new ResponseEntity<>(CommonResponseMessageDto.builder().message("internal server error").build(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -75,7 +83,7 @@ public class UnitController {
             return new ResponseEntity<>(CommonResponseMessageDto.builder().message("downloading").build(), HttpStatus.OK);
 
         } catch (Exception e) {
-            e.printStackTrace();
+           log.error(e.getLocalizedMessage());
             return new ResponseEntity<>(CommonResponseMessageDto.builder().message(e.getMessage()).build(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -87,7 +95,7 @@ public class UnitController {
 
             return new ResponseEntity<>(UnitDataResponseDto.builder().units(units).build(),HttpStatus.OK);
         }catch (Exception e){
-            e.printStackTrace();
+           log.error(e.getLocalizedMessage());
             return new ResponseEntity<>(CommonResponseMessageDto.builder().message(e.getMessage()).build(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -103,45 +111,52 @@ public class UnitController {
             }
 
         } catch (Exception e){
-            e.printStackTrace();
+           log.error(e.getLocalizedMessage());
             return new ResponseEntity<>(CommonResponseMessageDto.builder().message(e.getMessage()).build(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    @GetMapping("/updateUnitStatus/{unitNumber}")
-    public ResponseEntity<?> updateAvailability(@PathVariable("unitNumber") String unitNumber){
+    @PostMapping("/updateUnitStatus")
+    @Transactional
+    public ResponseEntity<?> updateAvailability( @RequestBody @Valid CommonResponseMessageDto commonResponseMessageDto){
         try{
-            Optional<Unit> unit = unitService.findByUnitNumber(unitNumber);
+          
+            Optional<Unit> unit = unitService.findByUnitNumber(commonResponseMessageDto.getMessage());
             if(unit.isPresent()) {
                 Unit unitFound = unit.get();
                
                 unitFound.setStatus(!(unitFound.isStatus()));
-
+                  
                unitService.saveUnit(unitFound);
                
                 return new ResponseEntity<>(CommonResponseMessageDto.builder().message("status successfully changed").build(), HttpStatus.OK);
             }else{
-                return new ResponseEntity<>(CommonResponseMessageDto.builder().message("id doesn't exist").build(), HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>(CommonResponseMessageDto.builder().message("unit doesn't exist").build(), HttpStatus.NOT_FOUND);
             }
 
         } catch (Exception e){
-            e.printStackTrace();
+           log.error(e.getLocalizedMessage());
             return new ResponseEntity<>(CommonResponseMessageDto.builder().message(e.getMessage()).build(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
     }
     @DeleteMapping("/reset/{id}")
+    @Transactional
     public ResponseEntity<?>  deleteUnit(@PathVariable("id") String id){
         try{
-            String res = unitService.deleteUnit(id);
-            if(res==null && jwtFilter.isAdmin()) {
+            System.out.println(jwtFilter.isAdmin());         
+            if(jwtFilter.isAdmin() ) {
+                unitService.deleteUnit(id);
                 return new ResponseEntity<>(CommonResponseMessageDto.builder().message("successfully deleted").build(), HttpStatus.OK);
             }else{
-                return new ResponseEntity<>(CommonResponseMessageDto.builder().message("id doesn't exist").build(), HttpStatus.FORBIDDEN);
+                return new ResponseEntity<>(CommonResponseMessageDto.builder().message("Request unauthorized").build(), HttpStatus.FORBIDDEN);
             }
 
-        } catch (Exception e){
-            e.printStackTrace();
-            return new ResponseEntity<>(CommonResponseMessageDto.builder().message(e.getMessage()).build(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }  
+        
+        catch (Exception e){
+           log.error(e.getLocalizedMessage());
+            
+            return new ResponseEntity<>(CommonResponseMessageDto.builder().message("unit with tenant cannot be deleted").build(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

@@ -7,6 +7,4 @@ import lombok.Setter;
 @Getter
 public class ApprovalDto {
     private String email;
-
-
 }

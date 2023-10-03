@@ -85,7 +85,7 @@ public class TenantService {
             table.addCell(tenant.getFirstName());
             table.addCell(tenant.getPhone());
             table.addCell(String.valueOf(tenant.getStart()));
-            table.addCell(String.valueOf(tenant.getEnd()));
+            table.addCell(String.valueOf(tenant.getEnded()));
             table.addCell(tenant.getPayStatus());
             table.addCell(tenant.getUnit().getUnitNumber());
 
@@ -106,7 +106,7 @@ public class TenantService {
                     .lastName(tenantReqDto.getLastName())
                     .phone(tenantReqDto.getPhone())
                     .start(LocalDate.now())
-                    .end(null)
+                    .ended(null)
                     .payStatus("unpaid")
                     .unit(unit.get())
                     .build();
