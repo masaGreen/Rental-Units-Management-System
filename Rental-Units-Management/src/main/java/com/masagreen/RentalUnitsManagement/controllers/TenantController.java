@@ -11,11 +11,15 @@ import com.masagreen.RentalUnitsManagement.utils.ProcessDownloadResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,7 +28,9 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/v1/tenants")
 @SecurityRequirement(name = "bearerAuth")
+@CrossOrigin("http://localhost:5173")
 @Tag(name="Tenants")
+@Slf4j
 public class TenantController {
     @Autowired
     private TenantService tenantService;
@@ -40,7 +46,7 @@ public class TenantController {
                     tenantService.findAllTenants()).build(), HttpStatus.OK
             );
         } catch (Exception e){
-            e.printStackTrace();
+            log.error(e.getLocalizedMessage());
             return new ResponseEntity<>(CommonResponseMessageDto.builder().message(e.getMessage()).build(), HttpStatusCode.valueOf(500));
         }
        
@@ -57,7 +63,7 @@ public class TenantController {
             return new ResponseEntity<>(CommonResponseMessageDto.builder().message("downloading").build(), HttpStatus.OK);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getLocalizedMessage());
             return new ResponseEntity<>(CommonResponseMessageDto.builder().message(e.getMessage()).build(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
        
@@ -77,7 +83,7 @@ public class TenantController {
             return new ResponseEntity<>(CommonResponseMessageDto.builder().message("downloading").build(), HttpStatus.INTERNAL_SERVER_ERROR);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getLocalizedMessage());
               return new ResponseEntity<>(CommonResponseMessageDto.builder().message(e.getMessage()).build(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
       
@@ -92,14 +98,14 @@ public class TenantController {
                     , HttpStatus.OK
             );
         } catch (Exception e){
-            e.printStackTrace();
+            log.error(e.getLocalizedMessage());
              return new ResponseEntity<>(CommonResponseMessageDto.builder().message(e.getMessage()).build(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
         
 
     }
     @PostMapping
-    public ResponseEntity<?> registerTenant(@RequestBody TenantReqDto tenantReqDto){
+    public ResponseEntity<?> registerTenant(@RequestBody @Valid TenantReqDto tenantReqDto){
 
            try {
                Tenant tenant = tenantService.saveTenant(tenantReqDto);
@@ -109,12 +115,13 @@ public class TenantController {
                    return new ResponseEntity<>(CommonResponseMessageDto.builder().message("unit already occupied/doesn't exist").build(), HttpStatus.BAD_REQUEST);
                }
            }catch (Exception e){
-               e.printStackTrace();
+               log.error(e.getLocalizedMessage());
                return new ResponseEntity<>(CommonResponseMessageDto.builder().message(e.getMessage()).build(), HttpStatus.INTERNAL_SERVER_ERROR);
            }
           
     }
     @DeleteMapping("/deleteTenant/{id}")
+    @Transactional
     public ResponseEntity<?>  deleteTenant(@PathVariable("id") String id){
         try{
             String res = tenantService.deleteTenant(id);
@@ -125,7 +132,7 @@ public class TenantController {
             }
 
         } catch (Exception e){
-            e.printStackTrace();
+            log.error(e.getLocalizedMessage());
            return new ResponseEntity<>(CommonResponseMessageDto.builder().message(e.getMessage()).build(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -143,25 +150,32 @@ public class TenantController {
             }
 
         } catch (Exception e){
-            e.printStackTrace();
+            log.error(e.getLocalizedMessage());
             return new ResponseEntity<>(CommonResponseMessageDto.builder().message(e.getMessage()).build(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
         }
         
     @PostMapping("/updatePaymentStatus")
-    public ResponseEntity<?> updatePaymentStatus(@RequestBody StatusUpdateReqDto statusUpdateReqDto){
+    public ResponseEntity<?> updatePaymentStatus(@RequestBody @Valid StatusUpdateReqDto statusUpdateReqDto){
+        
         try{
             Optional<Tenant> tenant = tenantService.findByPhone(statusUpdateReqDto.getPhone());
-            if(tenant.isPresent() && jwtFilter.isAdmin()) {
-                tenant.get().setPayStatus(statusUpdateReqDto.getPayStatus());
-                tenantService.saveTenant(tenant.get());
-                return new ResponseEntity<>(tenant, HttpStatus.OK);
+            System.out.println(jwtFilter.isAdmin());
+            if(tenant.isPresent()  ) {
+                if(jwtFilter.isAdmin()){
+                    tenant.get().setPayStatus(statusUpdateReqDto.getPayStatus());
+                    tenantService.saveTenant(tenant.get());
+                    return new ResponseEntity<>(tenant, HttpStatus.OK);
+                }else{
+                    return new ResponseEntity<>(CommonResponseMessageDto.builder().message("Request Unauthorized").build(), HttpStatus.FORBIDDEN);
+                }
+                
             }else{
-                return new ResponseEntity<>(CommonResponseMessageDto.builder().message("id doesn't exist or Unauthorized").build(), HttpStatus.FORBIDDEN);
+                return new ResponseEntity<>(CommonResponseMessageDto.builder().message("tenant with the phone no doesnt exist").build(), HttpStatus.NOT_FOUND);
             }
 
         } catch (Exception e){
-            e.printStackTrace();
+            log.error(e.getLocalizedMessage());
             return new ResponseEntity<>(CommonResponseMessageDto.builder().message(e.getMessage()).build(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
         

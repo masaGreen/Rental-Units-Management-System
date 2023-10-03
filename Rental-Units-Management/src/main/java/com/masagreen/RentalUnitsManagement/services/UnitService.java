@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.sql.SQLDataException;
 import java.util.List;
 import java.util.Optional;
 @Service
@@ -21,10 +22,18 @@ public class UnitService {
     public Unit saveUnit(Unit unit) {
 
         Optional<Unit> foundUnit = unitRepository.findByUnitNumber(unit.getUnitNumber());
-        System.out.println(foundUnit.get());
-        if(foundUnit.isEmpty()||(unit.getPlotName() != foundUnit.get().getPlotName())||(unit.getId() == foundUnit.get().getId())) {
+      
+        if(foundUnit.isEmpty()) {
              return unitRepository.save(unit);
-        }else {
+        }
+        if(foundUnit.isPresent() && (unit.getPlotName() != foundUnit.get().getPlotName())){
+            return unitRepository.save(unit);
+        }
+        if(foundUnit.isPresent() && (unit.isStatus() != foundUnit.get().isStatus())){
+            return unitRepository.save(unit);
+        }
+                
+        else {
             return null;
         }
 
@@ -102,17 +111,12 @@ public class UnitService {
         return unitRepository.findAll();
     }
 
-    public String deleteUnit(String id) {
-        System.out.println(id+">>>>>>>>");
-       Optional<Unit> unit = unitRepository.findById(Long.parseLong(id));
-       if (unit.isPresent()){
+    public void  deleteUnit(String id) throws SQLDataException {
          unitRepository.deleteById(Long.parseLong(id));
-         return null;
-       }
-       return "unit id doesn't exist";
+       
     }
 
-    public Optional<Unit> getSingleUnit(String id) throws NumberFormatException {
+    public Optional<Unit> getSingleUnit(String id)  {
         return unitRepository.findById(Long.parseLong(id));
     }
 

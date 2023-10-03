@@ -24,8 +24,8 @@ import lombok.NoArgsConstructor;
 @Table(name="Users")
 public class AppUser implements UserDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
    
     private String email;
    

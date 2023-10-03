@@ -10,6 +10,10 @@ import com.masagreen.RentalUnitsManagement.services.UtilitiesPaymentsService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,8 +27,10 @@ import java.util.stream.Collectors;
 import static com.masagreen.RentalUnitsManagement.utils.ProcessDownloadResponse.processResponse;
 
 @RestController
+@Slf4j
 @RequestMapping("/v1/utilities")
 @SecurityRequirement(name = "bearerAuth")
+@CrossOrigin("http://localhost:5173")
 @Tag(name="utilities&Payments")
 public class UtilitiesController {
     @Autowired
@@ -33,7 +39,7 @@ public class UtilitiesController {
     private UnitService unitService;
 
     @PostMapping()
-    public ResponseEntity<?> saveUtilityPayment(@RequestBody UtilsReqDto utilsReqDto){
+    public ResponseEntity<?> saveUtilityPayment(@RequestBody @Valid UtilsReqDto utilsReqDto){
 
         UtilitiesPayments utilitiesPayments = processSaveUtilitiesPayment(utilsReqDto);
         try {
@@ -45,7 +51,7 @@ public class UtilitiesController {
                 return new ResponseEntity<>(CommonResponseMessageDto.builder().message("can't create utilities payments for non-existent unit").build(), HttpStatus.BAD_REQUEST);
             }
         } catch (Exception e){
-            e.printStackTrace();
+            log.error(e.getLocalizedMessage());
             return new ResponseEntity<>(CommonResponseMessageDto.builder().message(e.getMessage()).build(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -64,7 +70,7 @@ public class UtilitiesController {
             return new ResponseEntity<>(CommonResponseMessageDto.builder().message("successfully created").build(), HttpStatus.OK);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getLocalizedMessage());
             return new ResponseEntity<>(CommonResponseMessageDto.builder().message(e.getMessage()).build(),HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -83,7 +89,7 @@ public class UtilitiesController {
             return new ResponseEntity<>(CommonResponseMessageDto.builder().message("downloading").build(), HttpStatus.OK);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getLocalizedMessage());
             return new ResponseEntity<>(CommonResponseMessageDto.builder().message(e.getMessage()).build(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -100,7 +106,7 @@ public class UtilitiesController {
             return new ResponseEntity<>(CommonResponseMessageDto.builder().message("downloading").build(), HttpStatus.OK);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getLocalizedMessage());
             return new ResponseEntity<>(CommonResponseMessageDto.builder().message(e.getMessage()).build(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -112,7 +118,7 @@ public class UtilitiesController {
                     .utilsPayments(utilitiesPaymentsService.getAllUtils())
                     .build(), HttpStatus.OK);
         }catch (Exception e){
-            e.printStackTrace();
+            log.error(e.getLocalizedMessage());
             return new ResponseEntity<>(CommonResponseMessageDto.builder().message(e.getMessage()).build(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -129,7 +135,7 @@ public class UtilitiesController {
             }
 
         } catch (Exception e){
-            e.printStackTrace();
+            log.error(e.getLocalizedMessage());
             return new ResponseEntity<>(CommonResponseMessageDto.builder().message(e.getMessage()).build(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -149,13 +155,14 @@ public class UtilitiesController {
             }
 
         } catch (Exception e){
-            e.printStackTrace();
+            log.error(e.getLocalizedMessage());
             return new ResponseEntity<>(CommonResponseMessageDto.builder().message(e.getMessage()).build(), HttpStatus.INTERNAL_SERVER_ERROR);
 
         }
 
     }
     @DeleteMapping("/deleteUtilities/{id}")
+    @Transactional
     public ResponseEntity<?>  deleteUtility(@PathVariable("id") String id){
         try{
             String res = utilitiesPaymentsService.deleteUtility(id);
@@ -166,7 +173,7 @@ public class UtilitiesController {
             }
 
         } catch (Exception e){
-            e.printStackTrace();
+            log.error(e.getLocalizedMessage());
             return new ResponseEntity<>(CommonResponseMessageDto.builder().message(e.getMessage()).build(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 

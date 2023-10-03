@@ -15,7 +15,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 class AppUserServiceTest {
-    private int id;
+    private Long id;
     private AppUser appUser;
     @Autowired
     private AppUserService appUserService;
@@ -24,7 +24,7 @@ class AppUserServiceTest {
 
     @BeforeEach
     void setUp(){
-        id=1;
+        id=1L;
         appUser = AppUser.builder()
                 .id(id).email("root@gmail.com").password("password").role("ADMIN").status(false)
                 .build();
@@ -40,8 +40,8 @@ class AppUserServiceTest {
 
     @Test
     void findById() {
-        Mockito.when(appUserRepository.findById(1)).thenReturn(Optional.of(appUser));
-        assertTrue(appUserService.findById(1).isPresent());
+        Mockito.when(appUserRepository.findById(1L)).thenReturn(Optional.of(appUser));
+        assertTrue(appUserService.findById(1L).isPresent());
 
     }
 
@@ -62,6 +62,6 @@ class AppUserServiceTest {
     void  deleteAppUser() {
         Mockito.when(appUserRepository.save(appUser)).thenReturn(appUser);
         appUserService.deleteAppUser("1");
-        assertTrue(appUserService.findById(1).isEmpty());
+        assertTrue(appUserService.findById(1L).isEmpty());
     }
 }

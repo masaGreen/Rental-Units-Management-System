@@ -39,7 +39,7 @@ public class AppUserService implements UserDetailsService{
         return appUserRepository.save(user);
     } 
 
-    public Optional<AppUser> findById(int id) {
+    public Optional<AppUser> findById(Long id) {
         return appUserRepository.findById(id);
     }
     public Optional<AppUser> findByEmail(String email) {
@@ -53,10 +53,10 @@ public class AppUserService implements UserDetailsService{
 
 
     public String deleteAppUser(String id) {
-        Optional<AppUser> user = appUserRepository.findById(Integer.parseInt(id));
+        Optional<AppUser> user = appUserRepository.findById(Long.parseLong(id));
 
         if (user.isPresent()){
-            appUserRepository.deleteById(Integer.parseInt(id));
+            appUserRepository.deleteById(Long.parseLong(id));
             return null;
         }
         return "id doesn't exist";

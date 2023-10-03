@@ -43,7 +43,7 @@ class TenantControllerTest {
                 .lastName("Doe")
                 .phone("0712345678")
                 .start(LocalDate.now())
-                .end(null)
+                .ended(null)
                 .payStatus("unpaid")
                 .unit(unit)
                 .build();

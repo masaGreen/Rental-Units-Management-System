@@ -19,6 +19,7 @@ import com.masagreen.RentalUnitsManagement.jwt.JwtFilter;
 public class WebConfig {
     private final String[] allowedList = {
             "/v1/auth/login",
+            "http://localhost:5173",
             "/v1/auth/signup",
             "/swagger-ui.html",
             "swagger-ui/**",
