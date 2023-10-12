@@ -2,7 +2,7 @@
 spring:
 <<<<<<< HEAD
     config:
-        import: file:/Users/INTEL/Desktop/coding/java/spring/Rental-Unit-Management/Rental-Units-Management/src/main/resources/env.properties
+        import: src/main/resources/env.properties
     application:
         name: Rental-Unit-Management
     datasource:
@@ -31,7 +31,7 @@ spring:
     show-sql: false
 jwt:
   secret: <your jwt secret>
->>>>>>> 2ead301f91945df36c0c8e34662e43afb11d110f
+
 mail:
   originmail: <your smtp mail config>
 
