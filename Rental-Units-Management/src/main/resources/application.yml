@@ -1,5 +1,6 @@
 
 spring:
+<<<<<<< HEAD
     config:
         import: file:/Users/INTEL/Desktop/coding/java/spring/Rental-Unit-Management/Rental-Units-Management/src/main/resources/env.properties
     application:
@@ -14,8 +15,30 @@ spring:
         show-sql: true
 
     
+=======
+  profiles: test
+  
+  application:
+    name: Rental-Unit-Management
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    password: <your db password>
+    url: jdbc:mysql://<your db uri>/db_rentals
+    username: <your username>
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+jwt:
+  secret: <your jwt secret>
+>>>>>>> 2ead301f91945df36c0c8e34662e43afb11d110f
 mail:
-    originmail: 
+  originmail: <your smtp mail config>
+
+
+
+
+
 
 
 

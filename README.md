@@ -4,6 +4,15 @@
 ![Swagger3](https://img.shields.io/badge/Swagger3-84E713?style=for-the-badge&logo=swagger&logoColor=white)
 ![JWT](https://img.shields.io/badge/JWT-ef233c?style=for-the-badge&logo=jwt.io&logoColor=white)
 
+# url hosting the apidocs
+
+- swagger-openapi docs:
+ 
+         
+
+            https://rentals-management-backend.onrender.com/swagger-ui.html
+
+
 https://github.com/masaGreen/Rental-Units-Management-System/assets/111172753/8a7fb3b4-3f10-42d2-8be9-34b9dd3907a8
 
 # A rental-unit management Api made in Springboot.
@@ -38,7 +47,7 @@ This Api provides necessary endpoints that a client needs to manage rental units
 
             
 - The application will start at http://localhost:8080
-# Swagger Api documentation 
+# Local Swagger Api documentation 
 - For detailed documentation on endpoints and payloads visit "http://localhost:8080/swagger-ui.html" after your app starts.
 - Hit the default-authorized /v1/auth/login with the provided default login credentials to get your token inorder to test the rest of the endpoints.
   

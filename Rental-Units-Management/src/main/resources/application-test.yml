@@ -1,0 +1,23 @@
+spring:
+  profiles: test
+  server:
+    port: 9090
+  application:
+    name: Rental-Unit-Management
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    password: <your db password>
+    url: jdbc:mysql://<your db uri>/db_rentals
+    username: <your username>
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+jwt:
+  secret: <your jwt secret>
+mail:
+  originmail: <your smtp mail config>
+
+
+
+
